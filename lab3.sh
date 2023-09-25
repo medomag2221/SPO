@@ -1,9 +1,12 @@
 #!/bin/bash
-if [ $# == 0 ]; then
-	echo "No args"
-  	exit 1
-fi
-jrn=journalctl | grep -P "PID=$1"
-if [ -z "$jrn" ]; then
-   $jrn > journal.log
-fi
+# Используем awk для нахождения количества целых положительных значений
+# в каждой строке и фильтрации значений, не превышающих N
+awk -v N="$2" '{
+  count = 0
+  for (i = 1; i <= NF; i++) {
+    if ($i ~ /^[0-9]+$/ && $i <= N) {
+      count++
+    }
+  }
+  print count
+}' "$1"
